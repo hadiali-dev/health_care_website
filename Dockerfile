@@ -1,19 +1,17 @@
-# ----- build frotend assets -----
+# --- Stage 1: build frontend assets ---
 FROM node:20-alpine AS assets
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY package*.json ./
 RUN npm ci
 COPY . .
 RUN npm run build
 
-
-# ---install php deps ---
+# --- Stage 2: install PHP deps ---
 FROM composer:2 AS vendor
 WORKDIR /app
 COPY database/ database/
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-scripts --prefer-dist --optimize-autoloader
-
+RUN composer install --no-dev --no-scripts --no-interaction --prefer-dist --optimize-autoloader
 
 # --- Stage 3: final runtime image ---
 FROM php:8.5-cli-alpine
@@ -30,10 +28,4 @@ COPY --from=vendor /app/vendor ./vendor
 COPY --from=assets /app/public/build ./public/build
 COPY . .
 
-RUN chown -R www-data:www-data storage bootstrap/cache
-
-COPY docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-EXPOSE 8080
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["./docker/entrypoint.sh"]
