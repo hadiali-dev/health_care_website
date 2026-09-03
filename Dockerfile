@@ -18,9 +18,9 @@ FROM php:8.5-cli-alpine
 
 RUN apk add --no-cache \
     libzip-dev zip unzip icu-dev oniguruma-dev \
-    libpng-dev libjpeg-turbo-dev freetype-dev \
+    libpng-dev libjpeg-turbo-dev freetype-dev libpq-dev \
     && docker-php-ext-configure gd --with-jpeg --with-freetype \
-    && docker-php-ext-install pdo_mysql mbstring zip intl gd bcmath
+    && docker-php-ext-install pdo_mysql pdo_pgsql mbstring zip intl gd bcmath
 
 WORKDIR /var/www/html
 
