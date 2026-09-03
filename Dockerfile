@@ -11,7 +11,7 @@ RUN npm run build
 FROM composer:2 AS vendor
 WORKDIR /app
 COPY database/ database/
-COPY composer.json composer-lock ./
+COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --prefer-dist --optimize-autoloader
 
 
